@@ -43,11 +43,44 @@ GamePlayManager = {
 			diamond.scale.setTo(0.30 + game.rnd.frac());//otra forma de generar random entre 1 y 0
 			diamond.x = game.rnd.integerInRange(50,1050);
 			diamond.y = game.rnd.integerInRange(50,600);
+
+			this.diamonds[i] = diamond;
+
+			var rectCurrentDiamond = this.getBoundsDiamonds(diamond);
+			var rectHorse = this.getBoundsDiamonds(this.horse);
+
+			while(this.isOverlappingOtherDiamond(i,rectCurrentDiamond) ||
+				this.isRectanglesOverlapping(rectHorse, rectCurrentDiamond)){
+				diamond.x = game.rnd.integerInRange(50,1050);
+				diamond.y = game.rnd.integerInRange(50,600);
+				rectCurrentDiamond = this.getBoundsDiamonds(diamond);
+			}
 		}
 	},
 	//nueva funcion para setear el flag a true tras clickar 
 	onTap: function(){
 		this.flagFirstMouseDown = true;
+	},
+	getBoundsDiamonds: function(currentDiamod){
+		return new Phaser.Rectangle(currentDiamod.left, currentDiamod.top, currentDiamod.width, currentDiamod.height);
+	},
+	isRectanglesOverlapping: function(rect1,rect2){
+		if(rect1.x > rect2.x + rect2.width || rect2.x> rect1.x + rect1.width){
+			return false;
+		}
+		if(rect1.y > rect2.y + rect2.height || rect2.y> rect1.y + rect1.height){
+			return false;
+		}
+		return true;
+	},
+	isOverlappingOtherDiamond:function(index,rect2){
+		for(var i =0; i<index;i++){
+			var rect1 = this.getBoundsDiamonds(this.diamonds[i]);
+			if(this.isRectanglesOverlapping(rect1,rect2)){
+				return true;
+			}
+		}
+		return false;
 	},
 	update: function(){//lo llama por cada frame
 		console.log('update');
