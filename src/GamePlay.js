@@ -16,6 +16,8 @@ GamePlayManager = {
 		game.load.spritesheet('horse','assets/images/horse.png', 84, 156, 2);
 		//load de los diamantes
 		game.load.spritesheet('diamonds','assets/images/diamonds.png', 81, 84, 4);
+		//Cargando imagen efecto explosion
+		game.load.image('explosion','assets/images/explosion.png');
 	},
 	create: function(){//crea el juego
 		console.log('create');
@@ -56,6 +58,30 @@ GamePlayManager = {
 				rectCurrentDiamond = this.getBoundsDiamonds(diamond);
 			}
 		}
+	//añadimos el sprite de explosion
+		this.explosion = game.add.sprite(100,100, 'explosion');
+		/*
+		//creando una instancia de tween / animacion
+
+		var tween = game.add.tween(this.explosion);
+		//cordenadas, duracion, aceleramiento/easing
+		tween.to({x:500,y:100}, 1500, Phaser.Easing.Exponential.Out);
+		teeen.start();//inicia la animacion*/
+
+		//guardamos las instancias dentro del objeto explosion
+		this.explosion.tweenScale = game.add.tween(this.explosion.scale).to({
+			x: [0.4, 0.8, 0.4],
+			y: [0.4, 0.8, 0.4]
+		}, 600, Phaser.Easing.Exponential.Out, false, 0, 0, false);
+
+		this.explosion.tweenAlfa = game.add.tween(this.explosion).to({
+				alpha: [1,0.6, 0]
+		}, 600, Phaser.Easing.Exponential.Out,false, 0, 0, false);
+
+		//ponemos el anchor en la mitad del sprite tanto en x como en y
+		this.explosion.anchor.setTo(0.5);
+		//invisible al principio
+		this.explosion.visible = false;
 	},
 	//nueva funcion para setear el flag a true tras clickar 
 	onTap: function(){
@@ -82,6 +108,17 @@ GamePlayManager = {
 		}
 		return false;
 	},
+	getBoundsHorse: function(){
+		var x0= this.horse.x - Math.abs(this.horse.width/2);
+		var width = this.horse.width;
+		var y0= this.horse.y - Math.abs(this.horse.height/2);
+		var height = this.horse.height;
+
+		return new Phaser.Rectangle(x0,y0,width,height);
+	},
+	render: function(){
+		//game.debug.spriteBounds(this.horse); para ver el rectangulo
+	},
 	update: function(){//lo llama por cada frame
 		console.log('update');
 		//para rotar animado --> this.horse.angle +=1;
@@ -101,6 +138,22 @@ GamePlayManager = {
 
 			this.horse.x += distX * 0.02;
 			this.horse.y += distY * 0.02;
+
+			//detector de colisiones
+			for(var i = 0;i<AMOUNT_DIAMONDS;i++){
+				var rectHorse = this.getBoundsHorse();
+				var rectDiamond = this.getBoundsDiamonds(this.diamonds[i]);
+				if(this.isRectanglesOverlapping(rectHorse,rectDiamond) && this.diamonds[i].visible){
+					this.diamonds[i].visible = false;
+					
+					this.explosion.visible=true;
+					this.explosion.x = this.diamonds[i].x;
+					this.explosion.y = this.diamonds[i].y;
+					this.explosion.tweenScale.start();
+					this.explosion.tweenAlfa.start();
+				}
+
+			}
 		}
 	},
 }
