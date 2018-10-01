@@ -15,6 +15,9 @@ GamePlayManager = {
 		game.load.spritesheet('diamonds','assets/images/diamonds.png', 81, 84, 4);
 		//Cargando imagen efecto explosion
 		game.load.image('explosion','assets/images/explosion.png');
+
+		game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    	game.scale.setMinMax(568, 320, 1136, 640);
 	},
 	create: function(){//crea el juego
 		//(cordenada X, cordenada Y, nombreParaUtilizarlo)
