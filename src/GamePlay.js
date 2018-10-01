@@ -2,13 +2,10 @@ var AMOUNT_DIAMONDS = 30;
 
 GamePlayManager = {
 	init: function(){//inicializa valores
-		console.log('init');
-
 		//ponemos flag para inicializar el movimiento del caballo
 		this.flagFirstMouseDown = false;
 	},
 	preload: function(){//carga de recursos para el proyecto
-		console.log('preload');
 		//2.en el preload cargamos la imagen del fondo (nameParaUtilizarlo, ruta)
 		game.load.image('background', 'assets/images/background.png');
 		//3.Vamos a hacer un preolad de un spritesheet en vez de un solo sprite. 
@@ -20,7 +17,6 @@ GamePlayManager = {
 		game.load.image('explosion','assets/images/explosion.png');
 	},
 	create: function(){//crea el juego
-		console.log('create');
 		//(cordenada X, cordenada Y, nombreParaUtilizarlo)
 		game.add.sprite(0, 0, 'background');
 		//para los spritesheets cogemos el sprite y lo almacenamos en una instancia
@@ -58,17 +54,10 @@ GamePlayManager = {
 				rectCurrentDiamond = this.getBoundsDiamonds(diamond);
 			}
 		}
-	//añadimos el sprite de explosion
+		//añadimos el sprite de explosion
 		this.explosion = game.add.sprite(100,100, 'explosion');
-		/*
-		//creando una instancia de tween / animacion
 
-		var tween = game.add.tween(this.explosion);
-		//cordenadas, duracion, aceleramiento/easing
-		tween.to({x:500,y:100}, 1500, Phaser.Easing.Exponential.Out);
-		teeen.start();//inicia la animacion*/
-
-		//guardamos las instancias dentro del objeto explosion
+		//guardamos las instancias tween de la animacion dentro del objeto explosion
 		this.explosion.tweenScale = game.add.tween(this.explosion.scale).to({
 			x: [0.4, 0.8, 0.4],
 			y: [0.4, 0.8, 0.4]
@@ -90,6 +79,14 @@ GamePlayManager = {
 	getBoundsDiamonds: function(currentDiamod){
 		return new Phaser.Rectangle(currentDiamod.left, currentDiamod.top, currentDiamod.width, currentDiamod.height);
 	},
+	getBoundsHorse: function(){
+		var x0= this.horse.x - Math.abs(this.horse.width/2);
+		var width = this.horse.width;
+		var y0= this.horse.y - Math.abs(this.horse.height/2);
+		var height = this.horse.height;
+
+		return new Phaser.Rectangle(x0,y0,width,height);
+	},
 	isRectanglesOverlapping: function(rect1,rect2){
 		if(rect1.x > rect2.x + rect2.width || rect2.x> rect1.x + rect1.width){
 			return false;
@@ -108,19 +105,10 @@ GamePlayManager = {
 		}
 		return false;
 	},
-	getBoundsHorse: function(){
-		var x0= this.horse.x - Math.abs(this.horse.width/2);
-		var width = this.horse.width;
-		var y0= this.horse.y - Math.abs(this.horse.height/2);
-		var height = this.horse.height;
-
-		return new Phaser.Rectangle(x0,y0,width,height);
-	},
-	render: function(){
-		//game.debug.spriteBounds(this.horse); para ver el rectangulo
-	},
+	/*render: function(){
+		game.debug.spriteBounds(this.horse); para ver el rectangulo
+	},*/
 	update: function(){//lo llama por cada frame
-		console.log('update');
 		//para rotar animado --> this.horse.angle +=1;
 		if(this.flagFirstMouseDown){//control de primer movimiento
 			//guardar cordenadas del mouse
@@ -159,7 +147,7 @@ GamePlayManager = {
 }
 
 // (width, height, [Phaser.CANVAS/Phaser.AUTO/Phaser.WEBGL])
-var game = new Phaser.Game(1136, 640, Phaser.CANVAS)
+var game = new Phaser.Game(1136, 640, Phaser.CANVAS);
 
 game.state.add('gameplay', GamePlayManager);
 game.state.start('gameplay');
